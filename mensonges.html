@@ -123,24 +123,15 @@
         <path d="M12 1a3 3 0 00-3 3v7a3 3 0 006 0V4a3 3 0 00-3-3zm5 10a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 10v-3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <label>
-      <input type="checkbox" id="lucidCheckbox" /> ✨ C'était un mensonge lucide
-    </label><br />
     <button onclick="saveLie()">💾 Sauvegarder</button>
     <button onclick="exportLies()">📥 Exporter</button>
     <button class="delete-all-btn" onclick="confirmDeleteAll()">🗑️ Supprimer tout</button>
     <h2>Mes Mensonges</h2>
-    <label for="filterSelect">🔍 Filtrer :</label>
-    <select id="filterSelect" onchange="loadLies()">
-      <option value="all">Tous</option>
-      <option value="lucid">Lucides seulement</option>
-      <option value="non-lucid">Non lucides</option>
-    </select>
     <ul id="lieList"></ul>
   </div>
 
   <script>
-    const PASSWORD = "mensongeSecret123";
+    const PASSWORD = "Lauryn";
 
     function checkPassword() {
       const input = document.getElementById("passwordInput").value;
@@ -154,34 +145,27 @@
     }
 
     const lieInput = document.getElementById("lieInput");
-    const lucidCheckbox = document.getElementById("lucidCheckbox");
     const lieList = document.getElementById("lieList");
-    const filterSelect = document.getElementById("filterSelect");
 
     function saveLie() {
       const text = lieInput.value.trim();
-      const isLucid = lucidCheckbox.checked;
       if (!text) return;
       const date = new Date().toLocaleString();
       const lies = JSON.parse(localStorage.getItem("lies") || "[]");
-      lies.unshift({ text, date, lucid: isLucid });
+      lies.unshift({ text, date });
       localStorage.setItem("lies", JSON.stringify(lies));
       lieInput.value = "";
-      lucidCheckbox.checked = false;
       loadLies();
     }
 
     function loadLies() {
       const lies = JSON.parse(localStorage.getItem("lies") || "[]");
-      const filter = filterSelect.value;
       lieList.innerHTML = "";
       lies.forEach((lie, index) => {
-        if (filter === "lucid" && !lie.lucid) return;
-        if (filter === "non-lucid" && lie.lucid) return;
         const li = document.createElement("li");
         li.innerHTML = `
           <div>${lie.text}</div>
-          <div class='date'>${lie.date}${lie.lucid ? " ✨ Mensonge lucide" : ""}</div>
+          <div class='date'>${lie.date}</div>
           <button class='delete-entry-btn delete-btn' onclick='deleteLie(${index})'>Supprimer</button>
         `;
         lieList.appendChild(li);
@@ -210,7 +194,7 @@
       }
       let content = "Journal de Mensonges\n\n";
       lies.forEach((lie, index) => {
-        content += `Mensonge #${lies.length - index}\nDate : ${lie.date}${lie.lucid ? " (Lucide)" : ""}\n${lie.text}\n\n`;
+        content += `Mensonge #${lies.length - index}\nDate : ${lie.date}\n${lie.text}\n\n`;
       });
       const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
